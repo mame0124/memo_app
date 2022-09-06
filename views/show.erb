@@ -1,0 +1,21 @@
+<html lang="ja">
+  <head>
+    <mata charset="utf-8">
+    <title>show</title>
+  </head>
+  <body>
+    <h1>メモアプリ</h1>
+    <div>
+      <%= @title %><br>
+      <%= @memo %><br>
+    </div>
+    <form action="http://localhost:4567/memos/<%=@id%>/edit" method ="GET">
+      <button type="submit">変更</button>
+    </form>
+    <form action="http://localhost:4567/memos/<%=@id%>" method ="POST">
+      <button type="submit">削除</button>
+      <input type="hidden" name="_method" value="DELETE">
+    </form>
+  </body>
+</html>
+
