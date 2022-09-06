@@ -40,6 +40,9 @@ end
 
 post "/memos" do
   new_memo_info = params
+  unless new_memo_info["title"].match?(/[^ ]+/)
+    new_memo_info["title"] = "No title"
+  end
   new_memo_info["id"] = SecureRandom.hex(5)
   IO.write('memo.json', "#{new_memo_info.to_json}\n", mode: "a")
   redirect 'http://localhost:4567/memos'
