@@ -1,0 +1,53 @@
+@charset "UTF-8";
+body {
+font-family: 'Avenir','Helvetica Neue','Helvetica','Arial','Hiragino Sans','ヒラギノ角ゴシック',YuGothic,'Yu Gothic','メイリオ', Meiryo,'ＭＳ Ｐゴシック','MS PGothic'  
+}
+h1{
+  font-size: 30px;
+  color: White;
+  height: 60px;
+  background: SkyBlue;
+  text-align:center
+}
+.text{
+  text-align:center;
+  margin: 20px;
+}
+.center{
+  text-align:center;
+}
+.buttondisp{
+  display: flex;
+justify-content: center;
+}
+button{
+  background: Silver;
+  border-radius: 0.5rem;
+  display:inline-block;
+  width: 100px;
+  margin: 10px;  
+}
+ul li, ol li {
+  line-height: 1.5; /*文の行高*/
+  padding: 0.5em 0; /*前後の文との余白*/
+  list-style-type: none; 
+  text-align:center
+}
+textarea{
+  width: 400px;
+  height: 200px;
+  border-radius: 0.3rem;
+  margin: 10px;
+}
+input{
+  width: 400px;
+  border-radius: 0.3rem;
+}
+a {
+  color: skyblue;
+  text-decoration:none;
+}
+a:hover {
+  color: skyblue;
+  font-weight: bold;
+}

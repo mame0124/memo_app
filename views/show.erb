@@ -2,20 +2,25 @@
   <head>
     <mata charset="utf-8">
     <title>show</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <h1>メモアプリ</h1>
-    <div>
+    <div class=text>
       <%= @title %><br>
+    </div>
+    <div class=text>
       <%= @memo %><br>
     </div>
-    <form action="http://localhost:4567/memos/<%=@id%>/edit" method ="GET">
-      <button type="submit">変更</button>
-    </form>
-    <form action="http://localhost:4567/memos/<%=@id%>" method ="POST">
-      <button type="submit">削除</button>
-      <input type="hidden" name="_method" value="DELETE">
-    </form>
+    <div class=buttondisp>
+     <form action="http://localhost:4567/memos/<%=@id%>/edit" method ="GET">
+        <button type="submit">変更</button>
+      </form>
+      <form action="http://localhost:4567/memos/<%=@id%>" method ="POST">
+        <button type="submit">削除</button>
+        <input type="hidden" name="_method" value="DELETE">
+      </form>
+    </div>
   </body>
 </html>
 

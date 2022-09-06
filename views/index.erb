@@ -2,12 +2,15 @@
   <head>
     <mata charset="utf-8">
     <title>index</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <h1>メモアプリ</h1>
-    <form action="http://localhost:4567/memos/new" method="GET">
-      <button type="submit">追加</button>
-    </form>
+    <div class=center>
+      <form action="http://localhost:4567/memos/new" method="GET">
+        <button type="submit">追加</button>
+      </form>
+    </div>
     <ul>
       <% @memo_infos.each do |memo| %>
         <li><a href=<%= "http://localhost:4567/memos/#{memo[:id]}"  %> ><%= memo[:title] %></li>
