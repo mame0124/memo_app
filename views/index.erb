@@ -7,13 +7,13 @@
   <body>
     <h1>メモアプリ</h1>
     <div class=center>
-      <form action="http://localhost:4567/memos/new" method="GET">
+      <a href="/memos/new">
         <button type="submit">追加</button>
-      </form>
+      </a>
     </div>
     <ul>
       <% @memo_infos.each do |memo| %>
-        <li><a href="<%= "http://localhost:4567/memos/#{memo[:id]}" %>"><%= memo[:title] %></li>
+        <li><a href="<%= "/memos/#{memo[:id]}" %>"><%= memo[:title] %></li>
       <% end %>
     </ul>
   </body>

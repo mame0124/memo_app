@@ -6,7 +6,7 @@
 
 * Gemfileにリスト化したgemを一括インストールします。
 ```
-bundle install 
+bundle install
 ```
 
 * bundle execを指定して実行します。
@@ -16,7 +16,7 @@ bundle exec ruby memoapp.rb
 
 # アプリ操作方法
 
-`http://localhost:4567/memos`のURLを開くとTOP画面が表示されます。
+`/memos`のURLを開くとTOP画面が表示されます。
 
 TOP画面ではメモの一覧表示と新規作成が出来ます。
 

@@ -51,3 +51,10 @@ a:hover {
   color: skyblue;
   font-weight: bold;
 }
+
+.content{
+  white-space: pre-wrap;
+  text-align: center;
+  margin: 20px;
+}
+

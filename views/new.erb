@@ -7,8 +7,8 @@
   <body>
     <h1>メモアプリ</h1>
     <div class=center>
-      <form action="http://localhost:4567/memos" method="POST">
-        <input type="text" name="title" value=""><br>
+      <form action="/memos" method="POST">
+        <input type="text" name="title" maxlength="50" value=""><br>
         <textarea name="memo" rows="5"></textarea><br>
         <button type="submit">保存</button>
       </form>
