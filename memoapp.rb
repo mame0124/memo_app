@@ -4,12 +4,11 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 require 'securerandom'
+require 'erb'
+include ERB::Util
 
 # DateBase class
 class DateBase
-  require 'erb'
-  include ERB::Util
-
   def read
     IO.readlines('memo.json').map { |memo_info| JSON.parse(memo_info, symbolize_names: true) }
   end
@@ -19,19 +18,10 @@ class DateBase
   end
 
   def insert(params)
-    new_memo_info = memo_info_escape(params)
+    new_memo_info = params
+    new_memo_info[:title] = 'No title' if new_memo_info['title'].strip.empty?
     new_memo_info['id'] = SecureRandom.uuid
     IO.write('memo.json', "#{new_memo_info.to_json}\n", mode: 'a')
-  end
-
-  def memo_info_escape(memo_info)
-    memo_info['title'] = if memo_info['title'].strip.empty?
-                           'No title'
-                         else
-                           html_escape(memo_info['title'])
-                         end
-    memo_info['memo'] = html_escape(memo_info['memo'])
-    memo_info
   end
 
   def delete(id)
@@ -42,8 +32,9 @@ class DateBase
   def edit(new_memo_params)
     new_memo_infos = read.map do |memo_info|
       if memo_info[:id] == new_memo_params[:id]
+        new_memo_params[:title] = 'No title' if new_memo_params['title'].strip.empty?
         new_memo_params.delete('_method')
-        memo_info_escape(new_memo_params)
+        new_memo_params
       else
         memo_info
       end
@@ -55,7 +46,11 @@ end
 db = DateBase.new
 
 get '/memos' do
-  @memo_infos = db.read
+  @memo_infos = db.read.map do |memo_info|
+    memo_info[:title] = html_escape(memo_info[:title])
+    memo_info[:memo] = html_escape(memo_info[:memo])
+    memo_info
+  end
   erb :index
 end
 
@@ -66,30 +61,30 @@ end
 get '/memos/:id' do
   @id = params[:id]
   memo_info = db.select(@id)
-  @title = memo_info[:title]
-  @memo = memo_info[:memo]
+  @title = html_escape(memo_info[:title])
+  @memo = html_escape(memo_info[:memo])
   erb :show
 end
 
 get '/memos/:id/edit' do
   @id = params[:id]
   memo_info = db.select(@id)
-  @title = memo_info[:title]
-  @memo = memo_info[:memo]
+  @title = html_escape(memo_info[:title])
+  @memo = html_escape(memo_info[:memo])
   erb :edit
 end
 
 post '/memos' do
   db.insert(params)
-  redirect 'http://localhost:4567/memos'
+  redirect '/memos'
 end
 
 delete '/memos/:id' do
   db.delete(params[:id])
-  redirect 'http://localhost:4567/memos'
+  redirect '/memos'
 end
 
 patch '/memos/:id' do
   db.edit(params)
-  redirect 'http://localhost:4567/memos'
+  redirect '/memos'
 end
