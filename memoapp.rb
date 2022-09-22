@@ -5,7 +5,6 @@ require 'sinatra/reloader'
 require 'json'
 require 'securerandom'
 require 'erb'
-include ERB::Util
 
 # DateBase class
 class DateBase
@@ -19,7 +18,6 @@ class DateBase
 
   def insert(params)
     new_memo_info = params
-    new_memo_info[:title] = 'No title' if new_memo_info['title'].strip.empty?
     new_memo_info['id'] = SecureRandom.uuid
     IO.write('memo.json', "#{new_memo_info.to_json}\n", mode: 'a')
   end
@@ -32,7 +30,6 @@ class DateBase
   def edit(new_memo_params)
     new_memo_infos = read.map do |memo_info|
       if memo_info[:id] == new_memo_params[:id]
-        new_memo_params[:title] = 'No title' if new_memo_params['title'].strip.empty?
         new_memo_params.delete('_method')
         new_memo_params
       else
@@ -47,8 +44,8 @@ db = DateBase.new
 
 get '/memos' do
   @memo_infos = db.read.map do |memo_info|
-    memo_info[:title] = html_escape(memo_info[:title])
-    memo_info[:memo] = html_escape(memo_info[:memo])
+    memo_info[:title] = memo_info[:title].strip.empty? ? 'No title' : ERB::Util.html_escape(memo_info[:title])
+    memo_info[:memo] = ERB::Util.html_escape(memo_info[:memo])
     memo_info
   end
   erb :index
@@ -61,16 +58,16 @@ end
 get '/memos/:id' do
   @id = params[:id]
   memo_info = db.select(@id)
-  @title = html_escape(memo_info[:title])
-  @memo = html_escape(memo_info[:memo])
+  @title = ERB::Util.html_escape(memo_info[:title])
+  @memo = ERB::Util.html_escape(memo_info[:memo])
   erb :show
 end
 
 get '/memos/:id/edit' do
   @id = params[:id]
   memo_info = db.select(@id)
-  @title = html_escape(memo_info[:title])
-  @memo = html_escape(memo_info[:memo])
+  @title = ERB::Util.html_escape(memo_info[:title])
+  @memo = ERB::Util.html_escape(memo_info[:memo])
   erb :edit
 end
 
