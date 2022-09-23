@@ -1,0 +1,18 @@
+<html lang="ja">
+  <head>
+    <mata charset="utf-8">
+    <title>edit</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <h1>メモアプリ</h1>
+    <div class=center>
+      <form action="/memos/<%= @id %>" method="POST">
+        <input type="text" name="title" maxlength="50" value="<%= @title %>"><br>
+        <textarea name="memo" rows="5"><%= @memo %></textarea><br>
+        <button type="submit">変更</button>
+        <input type="hidden" name="_method" value="PATCH">
+      </form>
+    </div>
+  </body>
+</HTML>

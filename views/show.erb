@@ -1,0 +1,27 @@
+<html lang="ja">
+  <head>
+    <mata charset="utf-8">
+    <title>show</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <h1>メモアプリ</h1>
+    <div class=text>
+      <strong>title:</strong><br>
+      <%= @title %><br>
+    </div>
+    <div class=content>
+      <strong>memo:</strong><br>
+      <%= @memo %><br>
+    </div>
+    <div class=buttondisp>
+     <form action="/memos/<%= @id %>/edit" method="GET">
+        <button type="submit">変更</button>
+      </form>
+      <form action="/memos/<%= @id %>" method="POST">
+        <button type="submit">削除</button>
+        <input type="hidden" name="_method" value="DELETE">
+      </form>
+    </div>
+  </body>
+</html>
