@@ -7,21 +7,23 @@ require 'securerandom'
 require 'erb'
 require 'pg'
 
-# DateBase class
-class DateBase
+# DataBase class
+class DataBase
   def initialize
+    sql = <<-SQL
+      CREATE TABLE IF NOT EXISTS memo
+      (
+      id SERIAL PRIMARY KEY,
+      title TEXT,
+      memo TEXT
+      )
+      SQL
     @conn = PG.connect(dbname: 'postgres')
-    @conn.exec('
-       CREATE TABLE IF NOT EXISTS memo
-    (
-    id serial primary key,
-    title TEXT,
-    memo text
-    )')
+    @conn.exec(sql)
   end
 
   def read
-    @conn.exec('SELECT * FROM memo')
+    @conn.exec('SELECT * FROM memo ORDER BY id')
   end
 
   def select(id)
@@ -41,13 +43,13 @@ class DateBase
   end
 end
 
-db = DateBase.new
+db = DataBase.new
 
 get '/memos' do
-  @memo_infos = db.read.map do |memo_info|
-    memo_info['title'] = memo_info['title'].strip.empty? ? 'No title' : ERB::Util.html_escape(memo_info['title'])
-    memo_info['memo'] = ERB::Util.html_escape(memo_info['memo'])
-    memo_info
+  @memos = db.read.map do |memo|
+    memo['title'] = memo['title'].strip.empty? ? 'No title' : ERB::Util.html_escape(memo['title'])
+    memo['memo'] = ERB::Util.html_escape(memo['memo'])
+    memo
   end
   erb :index
 end
@@ -58,17 +60,17 @@ end
 
 get '/memos/:id' do
   @id = params[:id]
-  memo_info = db.select(@id)
-  @title = ERB::Util.html_escape(memo_info['title'])
-  @memo = ERB::Util.html_escape(memo_info['memo'])
+  memo = db.select(@id)
+  @title = ERB::Util.html_escape(memo['title'])
+  @memo = ERB::Util.html_escape(memo['memo'])
   erb :show
 end
 
 get '/memos/:id/edit' do
   @id = params[:id]
-  memo_info = db.select(@id)
-  @title = ERB::Util.html_escape(memo_info['title'])
-  @memo = ERB::Util.html_escape(memo_info['memo'])
+  memo = db.select(@id)
+  @title = ERB::Util.html_escape(memo['title'])
+  @memo = ERB::Util.html_escape(memo['memo'])
   erb :edit
 end
 
