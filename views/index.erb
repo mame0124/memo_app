@@ -12,8 +12,8 @@
       </a>
     </div>
     <ul>
-      <% @memo_infos.each do |memo| %>
-        <li><a href="<%= "/memos/#{memo[:id]}" %>"><%= memo[:title] %></li>
+      <% @memos.each do |memo| %>
+        <li><a href="<%= "/memos/#{memo["id"]}" %>"><%= memo["title"] %></li>
       <% end %>
     </ul>
   </body>

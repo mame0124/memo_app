@@ -5,48 +5,51 @@ require 'sinatra/reloader'
 require 'json'
 require 'securerandom'
 require 'erb'
+require 'pg'
 
-# DateBase class
-class DateBase
+# DataBase class
+class DataBase
+  def initialize
+    sql = <<-SQL
+      CREATE TABLE IF NOT EXISTS memo
+      (
+      id SERIAL PRIMARY KEY,
+      title TEXT,
+      memo TEXT
+      )
+      SQL
+    @conn = PG.connect(dbname: 'postgres')
+    @conn.exec(sql)
+  end
+
   def read
-    IO.readlines('memo.json').map { |memo_info| JSON.parse(memo_info, symbolize_names: true) }
+    @conn.exec('SELECT * FROM memo ORDER BY id')
   end
 
   def select(id)
-    read.detect { |m| m[:id] == id }
+    @conn.exec_params('SELECT * FROM memo WHERE id=$1', [id])[0]
   end
 
-  def insert(params)
-    new_memo_info = params
-    new_memo_info['id'] = SecureRandom.uuid
-    IO.write('memo.json', "#{new_memo_info.to_json}\n", mode: 'a')
+  def insert(title, memo)
+    @conn.exec_params('INSERT INTO memo (title, memo) VALUES ($1, $2)', [title, memo])
   end
 
   def delete(id)
-    new_memo_infos = read.reject { |memo_info| memo_info[:id] == id }
-    IO.write('memo.json', new_memo_infos.map { |x| "#{x.to_json}\n" }.join)
+    @conn.exec_params('DELETE FROM memo WHERE id=$1', [id])
   end
 
-  def edit(new_memo_params)
-    new_memo_infos = read.map do |memo_info|
-      if memo_info[:id] == new_memo_params[:id]
-        new_memo_params.delete('_method')
-        new_memo_params
-      else
-        memo_info
-      end
-    end
-    IO.write('memo.json', new_memo_infos.map { |x| "#{x.to_json}\n" }.join)
+  def edit(title, memo, id)
+    @conn.exec_params('UPDATE memo SET title=$1, memo=$2 WHERE id=$3', [title, memo, id])
   end
 end
 
-db = DateBase.new
+db = DataBase.new
 
 get '/memos' do
-  @memo_infos = db.read.map do |memo_info|
-    memo_info[:title] = memo_info[:title].strip.empty? ? 'No title' : ERB::Util.html_escape(memo_info[:title])
-    memo_info[:memo] = ERB::Util.html_escape(memo_info[:memo])
-    memo_info
+  @memos = db.read.map do |memo|
+    memo['title'] = memo['title'].strip.empty? ? 'No title' : ERB::Util.html_escape(memo['title'])
+    memo['memo'] = ERB::Util.html_escape(memo['memo'])
+    memo
   end
   erb :index
 end
@@ -57,22 +60,22 @@ end
 
 get '/memos/:id' do
   @id = params[:id]
-  memo_info = db.select(@id)
-  @title = ERB::Util.html_escape(memo_info[:title])
-  @memo = ERB::Util.html_escape(memo_info[:memo])
+  memo = db.select(@id)
+  @title = ERB::Util.html_escape(memo['title'])
+  @memo = ERB::Util.html_escape(memo['memo'])
   erb :show
 end
 
 get '/memos/:id/edit' do
   @id = params[:id]
-  memo_info = db.select(@id)
-  @title = ERB::Util.html_escape(memo_info[:title])
-  @memo = ERB::Util.html_escape(memo_info[:memo])
+  memo = db.select(@id)
+  @title = ERB::Util.html_escape(memo['title'])
+  @memo = ERB::Util.html_escape(memo['memo'])
   erb :edit
 end
 
 post '/memos' do
-  db.insert(params)
+  db.insert(params[:title], params[:memo])
   redirect '/memos'
 end
 
@@ -82,6 +85,6 @@ delete '/memos/:id' do
 end
 
 patch '/memos/:id' do
-  db.edit(params)
+  db.edit(params[:title], params[:memo], params[:id])
   redirect '/memos'
 end
